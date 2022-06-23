@@ -1,7 +1,13 @@
 import type { Token } from './lexer';
 
 
-export interface AST { };
+export enum TYPE {
+  Program = 'Program',
+  Literal = 'Literal'
+};
+export type AST = Program | Literal;
+type Program = { type: TYPE.Program; body: Literal; };
+type Literal = { type: TYPE.Literal; value: number; };
 
 
 /**
@@ -14,6 +20,20 @@ export class Parser {
 
   parse(tokens: Token[]): AST {
     this.tokens = tokens;
-    return {};
+    return this.program();
+  }
+
+  private program(): AST {
+    return {
+      type: TYPE.Program,
+      body: this.constant()
+    }
+  }
+
+  private constant(): Literal {
+    return {
+      type: TYPE.Literal,
+      value: this.tokens[0].value
+    }
   }
 }

@@ -1,11 +1,11 @@
-import { AST } from './parser';
+import { AST, TYPE } from './parser';
 
 
 /**
  * Compiler compiles the AST tree to generate a function
  */
 export class Compiler {
-  private state: { body: []; };
+  private state: { body: (number | string)[]; };
 
   constructor() { }
 
@@ -15,6 +15,13 @@ export class Compiler {
     return new Function(this.state.body.join(''));
   }
 
-  recurse(ast: AST) {
+  recurse(ast: AST): number {
+    switch (ast.type) {
+      case TYPE.Program:
+        this.state.body.push('return ', this.recurse(ast.body), ';');
+        break;
+      case TYPE.Literal:
+        return ast.value;
+    }
   }
 }

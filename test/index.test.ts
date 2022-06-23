@@ -1,7 +1,11 @@
-import { expect, test } from '@jest/globals'
+import { describe, expect, test } from '@jest/globals'
 import { compile } from '../src/index';
 
 
-test('compile an expression into a function', () => {
-  expect(compile('')).toBeInstanceOf(Function);
+describe('compile', () => {
+  test('can compile an integer', () => {
+    const fn = compile('12');
+    expect(fn).toBeInstanceOf(Function);
+    expect(fn()).toBe(12);
+  });
 });
