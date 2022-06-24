@@ -19,6 +19,11 @@ export class Lexer {
     return this.expr[this.index];
   }
 
+  // next character
+  get nextCh(): string {
+    return this.expr[this.index + 1];
+  }
+
   constructor() { }
 
   tokenize(expr: string): Token[] {
@@ -26,7 +31,7 @@ export class Lexer {
     this.tokens = [];
     this.index = 0;
     while (this.index < this.expr.length) {
-      if (this.isNumber(this.ch)) {
+      if (this.isNumber(this.ch) || (this.ch === '.' && this.isNumber(this.nextCh))) {
         this.readNumber();
       } else {
         throw `Unexpected next character: ${this.ch}`;
@@ -42,10 +47,11 @@ export class Lexer {
   private readNumber(): void {
     let number = '';
     while (this.index < this.expr.length) {
-      if (!this.isNumber(this.ch)) {
+      if (this.ch === '.' || this.isNumber(this.ch)) {
+        number += this.ch;
+      } else {
         break;
       }
-      number += this.ch;
       this.index++;
     }
     this.tokens.push({

@@ -8,4 +8,16 @@ describe('compile', () => {
     expect(fn).toBeInstanceOf(Function);
     expect(fn()).toBe(12);
   });
+
+  describe('can compile a floating point number', () => {
+    test('with an integer part', () => {
+      const fn = compile('0.1');
+      expect(fn()).toBe(0.1);
+    });
+
+    test('without an integer part', () => {
+      const fn = compile('.1');
+      expect(fn()).toBe(0.1);
+    });
+  });
 });
