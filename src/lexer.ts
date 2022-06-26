@@ -46,11 +46,30 @@ export class Lexer {
 
   private readNumber(): void {
     let number = '';
+    let expMode = false;
     while (this.index < this.expr.length) {
-      if (this.ch === '.' || this.isNumber(this.ch)) {
-        number += this.ch;
+      if (expMode) {
+        const prevCh = number[number.length - 1];
+        if (
+          prevCh.toLowerCase() === 'e' &&
+          (this.ch === '+' || this.ch === '-') &&
+          this.nextCh && this.isNumber(this.nextCh)
+        ) {
+          number += this.ch;
+        } else if (this.isNumber(this.ch)) {
+          number += this.ch;
+        } else {
+          throw 'Invalid exponent';
+        }
       } else {
-        break;
+        if (this.ch === '.' || this.isNumber(this.ch)) {
+          number += this.ch;
+        } else if (this.ch.toLowerCase() === 'e') {
+          number += this.ch;
+          expMode = true;
+        } else {
+          break;
+        }
       }
       this.index++;
     }

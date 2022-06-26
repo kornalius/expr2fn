@@ -20,4 +20,38 @@ describe('compile', () => {
       expect(fn()).toBe(0.1);
     });
   });
+
+  describe('can compile a scientific notation number', () => {
+    test('with lowercase e', () => {
+      const fn = compile('1e2');
+      expect(fn()).toBe(100);
+    });
+
+    test('with uppercase E', () => {
+      const fn = compile('1E2');
+      expect(fn()).toBe(100);
+    });
+
+    test('with floating point coefficient', () => {
+      const fn = compile('0.1E2');
+      expect(fn()).toBe(10);
+    });
+
+    test('with exponent prefixed with + sign', () => {
+      const fn = compile('1E+2');
+      expect(fn()).toBe(100);
+    });
+
+    test('with exponent prefixed with - sign', () => {
+      const fn = compile('1E-2');
+      expect(fn()).toBe(0.01);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('1e-')).toThrow();
+      expect(() => compile('1ea')).toThrow();
+      expect(() => compile('1e-a')).toThrow();
+      expect(() => compile('1e2e3')).toThrow();
+    });
+  });
 });
