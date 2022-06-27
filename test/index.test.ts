@@ -54,4 +54,39 @@ describe('compile', () => {
       expect(() => compile('1e2e3')).toThrow();
     });
   });
+
+  describe('can compile a string', () => {
+    test('in single quotes', () => {
+      const fn = compile('\'ab\'');
+      expect(fn()).toBe('ab');
+    });
+
+    test('in double quotes', () => {
+      const fn = compile('"ab"');
+      expect(fn()).toBe('ab');
+    });
+
+    test('but throw an exception to mismatched quotes', () => {
+      expect(() => compile('\'ab"')).toThrow();
+    });
+
+    test('with single quotes inside', () => {
+      const fn = compile('\'a\\\'b\'');
+      expect(fn()).toBe('a\'b');
+    });
+
+    test('with double quotes inside', () => {
+      const fn = compile('\'a\\\"b\'');
+      expect(fn()).toBe('a"b');
+    });
+
+    test('with Unicode escape sequences inside', () => {
+      const fn = compile('\'a\\u00A0b\'');
+      expect(fn()).toBe('a\u00A0b');
+    });
+
+    test('but throw an exception to invalid Unicode escape sequence', () => {
+      expect(() => compile('\'\\u00G0\'')).toThrow();
+    });
+  });
 });

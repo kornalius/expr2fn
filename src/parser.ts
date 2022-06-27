@@ -7,7 +7,7 @@ export enum TYPE {
 };
 export type AST = Program | Literal;
 type Program = { type: TYPE.Program; body: Literal; };
-type Literal = { type: TYPE.Literal; value: number; };
+type Literal = { type: TYPE.Literal; value: number | string; };
 
 
 /**

@@ -1,6 +1,6 @@
 export interface Token {
   text: string;
-  value: number;
+  value: number | string;
 };
 
 
@@ -33,6 +33,8 @@ export class Lexer {
     while (this.index < this.expr.length) {
       if (this.isNumber(this.ch) || (this.ch === '.' && this.isNumber(this.nextCh))) {
         this.readNumber();
+      } else if (this.ch === '\'' || this.ch === '"') {
+        this.readString();
       } else {
         throw `Unexpected next character: ${this.ch}`;
       }
@@ -77,5 +79,43 @@ export class Lexer {
       text: number,
       value: Number(number)
     });
+  }
+
+  private readString(): void {
+    let string = '';
+    let quote = this.ch;
+    let escapes= ['n', 'f', 'r', 't', 'v', '\'', '"'];
+    this.index++;
+    while (this.index < this.expr.length) {
+      if (this.ch === '\\') {
+        if (this.nextCh === 'u') {
+          const hex = this.expr.slice(this.index + 2, this.index + 6);
+          if (!hex.match(/[\da-f]{4}/i)) {
+            throw 'Invalid Unicode escape sequence';
+          }
+          const charCode = parseInt(hex, 16);
+          string += String.fromCharCode(charCode);
+          this.index += 6;
+        } else {
+          if (escapes.indexOf(this.nextCh) >= 0) {
+            string += this.ch + this.nextCh;
+          } else {
+            string += this.nextCh;
+          }
+          this.index += 2;
+        }
+      } else if (this.ch === quote) {
+        this.tokens.push({
+          text: string,
+          value: string
+        });
+        this.index++;
+        return;
+      } else {
+        string += this.ch;
+        this.index++;
+      }
+    }
+    throw 'Unmatched quote';
   }
 }

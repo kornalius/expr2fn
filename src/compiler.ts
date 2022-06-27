@@ -15,13 +15,13 @@ export class Compiler {
     return new Function(this.state.body.join(''));
   }
 
-  recurse(ast: AST): number {
+  recurse(ast: AST): number | string {
     switch (ast.type) {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
       case TYPE.Literal:
-        return ast.value;
+        return typeof ast.value === 'string' ? `'${ast.value}'` : ast.value;
     }
   }
 }
