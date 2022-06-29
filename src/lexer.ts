@@ -47,6 +47,8 @@ export class Lexer {
         this.readString();
       } else if (this.isIdentifier(this.ch)) {
         this.readIdentifier();
+      } else if (this.isWhitespace(this.ch)) {
+        this.index++;
       } else {
         throw `Unexpected next character: ${this.ch}`;
       }
@@ -60,6 +62,10 @@ export class Lexer {
 
   private isIdentifier(ch: string): boolean {
     return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch === '_' || ch === '$';
+  };
+
+  private isWhitespace(ch: string): boolean {
+    return /\s/.test(ch);
   };
 
   private readNumber(): void {

@@ -96,4 +96,9 @@ describe('compile', () => {
     expect(compile('null')()).toBe(null);
     expect(compile('undefined')()).toBe(undefined);
   });
+
+  test('ignores whitespace', () => {
+    const fn = compile(' \n\r123\t\v\u00A0 ');
+    expect(fn()).toBe(123);
+  });
 });
