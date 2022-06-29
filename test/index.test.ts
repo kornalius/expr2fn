@@ -89,4 +89,11 @@ describe('compile', () => {
       expect(() => compile('\'\\u00G0\'')).toThrow();
     });
   });
+
+  test('can compile constant values true, false, null and undefined', () => {
+    expect(compile('true')()).toBe(true);
+    expect(compile('false')()).toBe(false);
+    expect(compile('null')()).toBe(null);
+    expect(compile('undefined')()).toBe(undefined);
+  });
 });

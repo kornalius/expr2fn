@@ -1,6 +1,16 @@
 export interface Token {
   text: string;
-  value: number | string;
+  value: number | string | boolean | null | undefined;
+};
+
+
+const CONSTANTS: {
+  [key: string]: boolean | null | undefined;
+} = {
+  'true': true,
+  'false': false,
+  'null': null,
+  'undefined': undefined
 };
 
 
@@ -35,6 +45,8 @@ export class Lexer {
         this.readNumber();
       } else if (this.ch === '\'' || this.ch === '"') {
         this.readString();
+      } else if (this.isIdentifier(this.ch)) {
+        this.readIdentifier();
       } else {
         throw `Unexpected next character: ${this.ch}`;
       }
@@ -45,6 +57,10 @@ export class Lexer {
   private isNumber(ch: string): boolean {
     return '0' <= ch && ch <= '9';
   }
+
+  private isIdentifier(ch: string): boolean {
+    return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch === '_' || ch === '$';
+  };
 
   private readNumber(): void {
     let number = '';
@@ -117,5 +133,21 @@ export class Lexer {
       }
     }
     throw 'Unmatched quote';
+  }
+
+  private readIdentifier(): void {
+    let identifier = '';
+    while (this.index < this.expr.length) {
+      if (this.isIdentifier(this.ch) || this.isNumber(this.ch)) {
+        identifier += this.ch;
+        this.index++;
+      } else {
+        break;
+      }
+    }
+    this.tokens.push({
+      text: identifier,
+      value: CONSTANTS[identifier]
+    });
   }
 }
