@@ -5,7 +5,7 @@ import { AST, TYPE } from './parser';
  * Compiler compiles the AST tree to generate a function
  */
 export class Compiler {
-  private state: { body: (number | string | boolean | null | undefined)[]; };
+  private state: { body: string[]; };
 
   constructor() { }
 
@@ -15,19 +15,24 @@ export class Compiler {
     return new Function(this.state.body.join(''));
   }
 
-  recurse(ast: AST): number | string | boolean | null | undefined {
+  recurse(ast: AST): string {
     switch (ast.type) {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.ArrayExpression:
+        const elements = [];
+        for (let i = 0; i < ast.elements.length; i++) {
+          if (ast.elements[i]) {
+            elements[i] = this.recurse(ast.elements[i]);
+          }
+        }
+        return '[' + elements.join(',') + ']';
       case TYPE.Literal:
         if (typeof ast.value === 'string') {
           return `'${ast.value}'`;
         }
-        if (ast.value === null) {
-          return 'null';
-        }
-        return ast.value;
+        return '' + ast.value;
     }
   }
 }

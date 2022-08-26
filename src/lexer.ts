@@ -45,6 +45,12 @@ export class Lexer {
         this.readNumber();
       } else if (this.ch === '\'' || this.ch === '"') {
         this.readString();
+      } else if (this.ch === '[' || this.ch === ',' || this.ch === ']') {
+        this.tokens.push({
+          text: this.ch,
+          value: null
+        });
+        this.index++;
       } else if (this.isIdentifier(this.ch)) {
         this.readIdentifier();
       } else if (this.isWhitespace(this.ch)) {

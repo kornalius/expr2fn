@@ -101,4 +101,33 @@ describe('compile', () => {
     const fn = compile(' \n\r123\t\v\u00A0 ');
     expect(fn()).toBe(123);
   });
+
+  describe('can compile an array', () => {
+    test('without elements', () => {
+      const fn = compile('[]');
+      expect(fn()).toEqual([]);
+    });
+
+    test('with elements', () => {
+      const fn = compile('[1, \'2\', [3, \'4\'], true, false]');
+      expect(fn()).toEqual([1, '2', [3, '4'], true, false]);
+    });
+
+    test('with empty, null and undefined elements', () => {
+      const fn = compile('[, null, undefined]');
+      expect(fn()).toEqual([, null, undefined]);
+      expect(Object.keys(fn())).toEqual(['1', '2']);
+    });
+
+    test('with trailing commas', () => {
+      const fn = compile('[1, 2, , ]');
+      expect(fn()).toEqual([1, 2, , ]);
+      expect(Object.keys(fn())).toEqual(['0', '1']);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('[\'1\' \'2\']')).toThrow();
+      expect(() => compile('[1')).toThrow();
+    });
+  });
 });
