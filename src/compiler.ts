@@ -28,6 +28,13 @@ export class Compiler {
           }
         }
         return '[' + elements.join(',') + ']';
+      case TYPE.ObjectExpression:
+        const properties = ast.properties.map(property => {
+          const key = property.key.type === TYPE.Identifier ? property.key.name : this.recurse(property.key);
+          const value = this.recurse(property.value);
+          return key + ':' + value;
+        });
+        return '{' + properties.join(',') + '}';
       case TYPE.Literal:
         if (typeof ast.value === 'string') {
           return `'${ast.value}'`;

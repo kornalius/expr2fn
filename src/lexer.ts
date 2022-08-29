@@ -1,6 +1,7 @@
 export interface Token {
   text: string;
   value: number | string | boolean | null | undefined;
+  identifier?: boolean;
 };
 
 
@@ -45,7 +46,10 @@ export class Lexer {
         this.readNumber();
       } else if (this.ch === '\'' || this.ch === '"') {
         this.readString();
-      } else if (this.ch === '[' || this.ch === ',' || this.ch === ']') {
+      } else if (
+        this.ch === '[' || this.ch === ',' || this.ch === ']' ||
+        this.ch === '{' || this.ch === '}' || this.ch === ':'
+      ) {
         this.tokens.push({
           text: this.ch,
           value: null
@@ -148,18 +152,20 @@ export class Lexer {
   }
 
   private readIdentifier(): void {
-    let identifier = '';
+    let name = '';
     while (this.index < this.expr.length) {
       if (this.isIdentifier(this.ch) || this.isNumber(this.ch)) {
-        identifier += this.ch;
+        name += this.ch;
         this.index++;
       } else {
         break;
       }
     }
+
     this.tokens.push({
-      text: identifier,
-      value: CONSTANTS[identifier]
+      text: name,
+      value: CONSTANTS[name],
+      identifier: !CONSTANTS.hasOwnProperty(name)
     });
   }
 }

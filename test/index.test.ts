@@ -130,4 +130,28 @@ describe('compile', () => {
       expect(() => compile('[1')).toThrow();
     });
   });
+
+  describe('can compile an object', () => {
+    test('without properties', () => {
+      const fn = compile('{}');
+      expect(fn()).toEqual({});
+    });
+
+    test('with literal-key properties ', () => {
+      const fn = compile('{\'a\': 1, \'bc\': \'23\', \'def\': [\'4\', 5, {\'g\': 67}]}');
+      expect(fn()).toEqual({'a': 1, 'bc': '23', 'def': ['4', 5, {'g': 67}]});
+    });
+
+    test('with identifier-key properties ', () => {
+      const fn = compile('{a: 1, bc: \'23\', def: [\'4\', 5, {g: 67}]}');
+      expect(fn()).toEqual({a: 1, bc: '23', def: ['4', 5, {g: 67}]});
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('{\'a\': 1 \'bc\': \'23\'}')).toThrow();
+      expect(() => compile('{\'a\': 1')).toThrow();
+      expect(() => compile('{a: 1 bc: \'23\'}')).toThrow();
+      expect(() => compile('{a: 1')).toThrow();
+    });
+  });
 });
