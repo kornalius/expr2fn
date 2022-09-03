@@ -154,4 +154,17 @@ describe('compile', () => {
       expect(() => compile('{a: 1')).toThrow();
     });
   });
+
+  describe('can compile context attribute access', () => {
+    test('when the context is given', () => {
+      const fn = compile('a');
+      expect(fn({a: 1})).toBe(1);
+      expect(fn({})).toBeUndefined();
+    });
+
+    test('when the context is not given', () => {
+      const fn = compile('a');
+      expect(fn()).toBeUndefined();
+    });
+  });
 });

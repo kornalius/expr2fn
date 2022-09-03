@@ -11,7 +11,7 @@ export enum TYPE {
 };
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
-type Primary = ArrayExpression | ObjectExpression | Property | Literal;
+type Primary = ArrayExpression | ObjectExpression | Property | Identifier | Literal;
 type ArrayExpression = { type: TYPE.ArrayExpression; elements: Primary[]; };
 type ObjectExpression = { type: TYPE.ObjectExpression; properties: Property[]; }
 type Property = { type: TYPE.Property; key: Identifier | Literal; value: Primary; };
@@ -44,6 +44,8 @@ export class Parser {
       return this.array();
     } else if (this.is('{')) {
       return this.object();
+    } else if (this.peek().identifier) {
+      return this.identifier();
     }
     return this.constant();
   }

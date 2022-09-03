@@ -12,7 +12,7 @@ export class Compiler {
   compile(ast: AST): Function {
     this.state = { body: [] };
     this.recurse(ast);
-    return new Function(this.state.body.join(''));
+    return new Function('ctx', this.state.body.join(''));
   }
 
   recurse(ast: AST): string {
@@ -35,6 +35,9 @@ export class Compiler {
           return key + ':' + value;
         });
         return '{' + properties.join(',') + '}';
+      case TYPE.Identifier:
+        this.state.body.push('var v0;if(ctx){v0=ctx.' + ast.name + ';}');
+        return 'v0'
       case TYPE.Literal:
         if (typeof ast.value === 'string') {
           return `'${ast.value}'`;
