@@ -167,4 +167,15 @@ describe('compile', () => {
       expect(fn()).toBeUndefined();
     });
   });
+
+  describe('can compile nested attribute access', () => {
+    test('in non-computed way (i.e. using dot operator)', () => {
+      const fn = compile('a.b.c');
+      expect(fn({a: {b: {c: 1}}})).toBe(1);
+      expect(fn({a: {b: {}}})).toBe(undefined);
+      expect(fn({a: {}})).toBe(undefined);
+      expect(fn({})).toBe(undefined);
+      expect(fn()).toBe(undefined);
+    });
+  });
 });

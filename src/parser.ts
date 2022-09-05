@@ -3,6 +3,7 @@ import type { Token } from './lexer';
 
 export enum TYPE {
   Program = 'Program',
+  MemberExpression = 'MemberExpression',
   ArrayExpression = 'ArrayExpression',
   ObjectExpression = 'ObjectExpression',
   Property = 'Property',
@@ -11,7 +12,8 @@ export enum TYPE {
 };
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
-type Primary = ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type Primary = MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type MemberExpression = { type: TYPE.MemberExpression; object: Primary; property: Identifier; };
 type ArrayExpression = { type: TYPE.ArrayExpression; elements: Primary[]; };
 type ObjectExpression = { type: TYPE.ObjectExpression; properties: Property[]; }
 type Property = { type: TYPE.Property; key: Identifier | Literal; value: Primary; };
@@ -40,15 +42,30 @@ export class Parser {
   }
 
   private primary(): Primary {
+    let primary: Primary;
     if (this.is('[')) {
-      return this.array();
+      primary = this.array();
     } else if (this.is('{')) {
-      return this.object();
+      primary = this.object();
     } else if (this.peek().identifier) {
-      return this.identifier();
+      primary = this.identifier();
+    } else {
+      primary = this.constant();
     }
-    return this.constant();
+    while (this.is('.')) {
+      primary = this.member(primary);
+    }
+    return primary;
   }
+
+  private member(object: Primary): MemberExpression {
+    this.consume('.')
+    return {
+      type: TYPE.MemberExpression,
+      object,
+      property: this.identifier()
+    };
+  };
 
   private array(): ArrayExpression {
     const elements: Primary[] = [];

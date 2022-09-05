@@ -48,7 +48,8 @@ export class Lexer {
         this.readString();
       } else if (
         this.ch === '[' || this.ch === ',' || this.ch === ']' ||
-        this.ch === '{' || this.ch === '}' || this.ch === ':'
+        this.ch === '{' || this.ch === '}' || this.ch === ':' ||
+        this.ch === '.'
       ) {
         this.tokens.push({
           text: this.ch,
