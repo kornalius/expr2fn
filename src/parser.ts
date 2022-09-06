@@ -13,7 +13,7 @@ export enum TYPE {
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
 type Primary = MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
-type MemberExpression = { type: TYPE.MemberExpression; object: Primary; property: Identifier; };
+type MemberExpression = { type: TYPE.MemberExpression; object: Primary; property: Primary; computed: boolean; };
 type ArrayExpression = { type: TYPE.ArrayExpression; elements: Primary[]; };
 type ObjectExpression = { type: TYPE.ObjectExpression; properties: Property[]; }
 type Property = { type: TYPE.Property; key: Identifier | Literal; value: Primary; };
@@ -52,18 +52,28 @@ export class Parser {
     } else {
       primary = this.constant();
     }
-    while (this.is('.')) {
-      primary = this.member(primary);
+    while (this.is('.') || this.is('[')) {
+      const computed = this.is('[');
+      primary = this.member(primary, computed);
     }
     return primary;
   }
 
-  private member(object: Primary): MemberExpression {
-    this.consume('.')
+  private member(object: Primary, computed: boolean): MemberExpression {
+    let property: Primary;
+    if (computed) {
+      this.consume('[');
+      property = this.primary();
+      this.consume(']');
+    } else {
+      this.consume('.');
+      property = this.identifier();
+    }
     return {
       type: TYPE.MemberExpression,
       object,
-      property: this.identifier()
+      property,
+      computed
     };
   };
 

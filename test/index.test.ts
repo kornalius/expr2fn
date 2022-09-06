@@ -177,5 +177,12 @@ describe('compile', () => {
       expect(fn({})).toBe(undefined);
       expect(fn()).toBe(undefined);
     });
+
+    test('in computed way (i.e. using square bracket notation)', () => {
+      expect(compile('a[0]')({a: [1, 2, 3]})).toBe(1);
+      expect(compile('a[\'b\']')({a: {b: 1}})).toBe(1);
+      expect(compile('a[c]')({a: {b: 1}, c: 'b'})).toBe(1);
+      expect(compile('a[c[\'d\']]')({a: {b: 1}, c: {d: 'b'}})).toBe(1);
+    });
   });
 });

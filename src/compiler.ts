@@ -38,6 +38,7 @@ export class Compiler {
       case TYPE.MemberExpression:
         variable = this.variableDeclaration();
         const left = this.recurse(ast.object);
+        const right = ast.computed ? this.recurse(ast.property) : (ast.property as any).name;
         this.state.body.push(
           this.if_(
             left,
@@ -45,7 +46,8 @@ export class Compiler {
               variable,
               this.member(
                 left,
-                ast.property.name
+                right,
+                ast.computed
               )
             )
           )
@@ -103,7 +105,10 @@ export class Compiler {
     return left + '=' + right + ';';
   }
 
-  member(left: string, right: string): string {
+  member(left: string, right: string, computed?: boolean): string {
+    if (computed) {
+      return '(' + left + ')[' + right + ']';
+    }
     return '(' + left + ').' + right;
   }
 }
