@@ -35,6 +35,10 @@ export class Compiler {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.CallExpression:
+        const callee = this.recurse(ast.callee);
+        const args = ast.arguments.map(arg => this.recurse(arg));
+        return callee + '&&' + callee + '(' + args.join(',') + ')';
       case TYPE.MemberExpression:
         variable = this.variableDeclaration();
         const left = this.recurse(ast.object);

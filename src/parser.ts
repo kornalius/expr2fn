@@ -3,6 +3,7 @@ import type { Token } from './lexer';
 
 export enum TYPE {
   Program = 'Program',
+  CallExpression = 'CallExpression',
   MemberExpression = 'MemberExpression',
   ArrayExpression = 'ArrayExpression',
   ObjectExpression = 'ObjectExpression',
@@ -12,7 +13,8 @@ export enum TYPE {
 };
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
-type Primary = MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type Primary = CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type CallExpression = { type: TYPE.CallExpression; callee: Primary; arguments: Primary[]; };
 type MemberExpression = { type: TYPE.MemberExpression; object: Primary; property: Primary; computed: boolean; };
 type ArrayExpression = { type: TYPE.ArrayExpression; elements: Primary[]; };
 type ObjectExpression = { type: TYPE.ObjectExpression; properties: Property[]; }
@@ -52,11 +54,34 @@ export class Parser {
     } else {
       primary = this.constant();
     }
-    while (this.is('.') || this.is('[')) {
-      const computed = this.is('[');
-      primary = this.member(primary, computed);
+    while (this.is('.') || this.is('[') || this.is('(')) {
+      if (this.is('(')) {
+        primary = this.call(primary);
+      } else {
+        const computed = this.is('[');
+        primary = this.member(primary, computed);
+      }
     }
     return primary;
+  }
+
+  private call(callee: Primary): CallExpression {
+    const args: Primary[] = [];
+    this.consume('(');
+    while (!this.is(')')) {
+      args.push(this.primary());
+      if (this.is(',')) {
+        this.consume(',');
+      } else {
+        break;
+      }
+    }
+    this.consume(')');
+    return {
+      type: TYPE.CallExpression,
+      callee,
+      arguments: args
+    };
   }
 
   private member(object: Primary, computed: boolean): MemberExpression {

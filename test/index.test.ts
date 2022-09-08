@@ -185,4 +185,26 @@ describe('compile', () => {
       expect(compile('a[c[\'d\']]')({a: {b: 1}, c: {d: 'b'}})).toBe(1);
     });
   });
+
+  describe('can compile function call', () => {
+    test('without arguments', () => {
+      const fn = compile('a()');
+      expect(fn({a: () => 1})).toBe(1);
+    });
+
+    test('with arguments', () => {
+      expect(compile('a(1)')({a: (p) => p})).toBe(1);
+      expect(compile('a(1, 2)')({a: (p1, p2) => p1 + p2})).toBe(3);
+      expect(
+        compile('a(1, b, c, d(2, 3))')(
+          {
+            a: (p1, p2, p3, p4) => p1 + p2 + p3() + p4,
+            b: 4,
+            c: () => 5,
+            d: (p1, p2) => p1 + p2
+          }
+        )
+      ).toBe(15);
+    });
+  });
 });
