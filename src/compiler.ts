@@ -29,20 +29,30 @@ export class Compiler {
     );
   }
 
-  recurse(ast: AST): string {
+  recurse(ast: AST, setCallContext?: Function): string {
     let variable: string;
     switch (ast.type) {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
       case TYPE.CallExpression:
-        const callee = this.recurse(ast.callee);
+        let callContext = 'ctx';
+        const callee = this.recurse(ast.callee, (context: string) => {
+          callContext = context;
+        });
         const args = ast.arguments.map(arg => this.recurse(arg));
-        return callee + '&&' + callee + '(' + args.join(',') + ')';
+        return callee + '&&' + callee + '.call(' + callContext +
+          (args.length > 0 ?
+            ',' + args.join(',') :
+            ''
+          ) + ')';
       case TYPE.MemberExpression:
         variable = this.variableDeclaration();
         const left = this.recurse(ast.object);
         const right = ast.computed ? this.recurse(ast.property) : (ast.property as any).name;
+        if (setCallContext) {
+          setCallContext(left);
+        }
         this.state.body.push(
           this.if_(
             left,

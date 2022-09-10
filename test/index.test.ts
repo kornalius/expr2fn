@@ -207,4 +207,32 @@ describe('compile', () => {
       ).toBe(15);
     });
   });
+
+  describe('can compile method call', () => {
+    test('of the context', () => {
+      const fn = compile('a()');
+      const ctx = {
+        a: function() {
+          return this.b;
+        },
+        b: 1
+      };
+      expect(fn(ctx)).toBe(1);
+    });
+
+    test('of the attribute', () => {
+      const ctx = {
+        a: {
+          // ES6's fat arrow function should be transformed into ES5's function at first
+          // b: () => this.c,
+          b: function() {
+            return this.c
+          },
+          c: 1
+        }
+      };
+      expect(compile('a.b()')(ctx)).toBe(1);
+      expect(compile('a[\'b\']()')(ctx)).toBe(1);
+    });
+  });
 });
