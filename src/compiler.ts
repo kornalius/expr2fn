@@ -35,6 +35,8 @@ export class Compiler {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.UnaryExpression:
+        return ast.operator + '(' + this.recurse(ast.argument) + ')';
       case TYPE.CallExpression:
         let callContext = 'ctx';
         const callee = this.recurse(ast.callee, (context: string) => {

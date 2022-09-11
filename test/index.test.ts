@@ -235,4 +235,40 @@ describe('compile', () => {
       expect(compile('a[\'b\']()')(ctx)).toBe(1);
     });
   });
+
+  describe('can compile unary operators +, - and !', () => {
+    test('inside a string', () => {
+      expect(compile('\'+\'')()).toBe('+');
+      expect(compile('\'-\'')()).toBe('-');
+      expect(compile('\'!\'')()).toBe('!');
+    });
+
+    test('once', () => {
+      expect(compile('+1')()).toBe(1);
+      expect(compile('+\'1\'')()).toBe(1);
+      expect(compile('+a')({a: 1})).toBe(1);
+      expect(compile('+a')({a: '1'})).toBe(1);
+
+      expect(compile('-1')()).toBe(-1);
+      expect(compile('-\'1\'')()).toBe(-1);
+      expect(compile('-a')({a: 1})).toBe(-1);
+      expect(compile('-a')({a: '1'})).toBe(-1);
+
+      expect(compile('!true')()).toBe(false);
+      expect(compile('!false')()).toBe(true);
+      expect(compile('!1')()).toBe(false);
+      expect(compile('!0')()).toBe(true);
+      expect(compile('!\'1\'')()).toBe(false);
+      expect(compile('!\'\'')()).toBe(true);
+      expect(compile('![]')()).toBe(false);
+      expect(compile('!{}')()).toBe(false);
+    });
+
+    test('multiple times', () => {
+      expect(compile('!!true')()).toBe(true);
+      expect(compile('!!!true')()).toBe(false);
+      expect(compile('!+1')()).toBe(false);
+      expect(compile('!-1')()).toBe(false);
+    });
+  });
 });

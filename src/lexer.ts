@@ -60,6 +60,8 @@ export class Lexer {
         this.readIdentifier();
       } else if (this.isWhitespace(this.ch)) {
         this.index++;
+      } else if (this.isOperator(this.ch)) {
+        this.readOperator();
       } else {
         throw `Unexpected next character: ${this.ch}`;
       }
@@ -78,6 +80,10 @@ export class Lexer {
   private isWhitespace(ch: string): boolean {
     return /\s/.test(ch);
   };
+
+  private isOperator(ch: string): boolean {
+    return ch === '+' || ch === '-' || ch === '!';
+  }
 
   private readNumber(): void {
     let number = '';
@@ -116,10 +122,12 @@ export class Lexer {
 
   private readString(): void {
     let string = '';
+    let raw = this.ch;
     let quote = this.ch;
     let escapes= ['n', 'f', 'r', 't', 'v', '\'', '"'];
     this.index++;
     while (this.index < this.expr.length) {
+      raw += this.ch;
       if (this.ch === '\\') {
         if (this.nextCh === 'u') {
           const hex = this.expr.slice(this.index + 2, this.index + 6);
@@ -139,7 +147,7 @@ export class Lexer {
         }
       } else if (this.ch === quote) {
         this.tokens.push({
-          text: string,
+          text: raw,
           value: string
         });
         this.index++;
@@ -168,5 +176,13 @@ export class Lexer {
       value: CONSTANTS[name],
       identifier: !CONSTANTS.hasOwnProperty(name)
     });
+  }
+
+  private readOperator(): void {
+    this.tokens.push({
+      text: this.ch,
+      value: null
+    });
+    this.index++;
   }
 }
