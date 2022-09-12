@@ -3,6 +3,7 @@ import type { Token } from './lexer';
 
 export enum TYPE {
   Program = 'Program',
+  BinaryExpression = 'BinaryExpression',
   UnaryExpression = 'UnaryExpression',
   CallExpression = 'CallExpression',
   MemberExpression = 'MemberExpression',
@@ -14,7 +15,8 @@ export enum TYPE {
 };
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
-type Primary = UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type Primary = BinaryExpression | UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type BinaryExpression = { type: TYPE.BinaryExpression; operator: string; left: Primary; right: Primary; };
 type UnaryExpression = { type: TYPE.UnaryExpression; operator: string; argument: Primary; };
 type CallExpression = { type: TYPE.CallExpression; callee: Primary; arguments: Primary[]; };
 type MemberExpression = { type: TYPE.MemberExpression; object: Primary; property: Primary; computed: boolean; };
@@ -41,8 +43,21 @@ export class Parser {
   private program(): AST {
     return {
       type: TYPE.Program,
-      body: this.unary()
+      body: this.binary()
     };
+  }
+
+  private binary(): Primary {
+    let left = this.unary();
+    while (this.is('*') || this.is('/') || this.is('%')) {
+      left = {
+        type: TYPE.BinaryExpression,
+        operator: this.consume().text,
+        left,
+        right: this.unary()
+      };
+    }
+    return left;
   }
 
   private unary(): Primary {

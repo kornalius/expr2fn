@@ -35,6 +35,8 @@ export class Compiler {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.BinaryExpression:
+        return '(' + this.recurse(ast.left) + ')' + ast.operator + '(' + this.recurse(ast.right) + ')';
       case TYPE.UnaryExpression:
         return ast.operator + '(' + this.recurse(ast.argument) + ')';
       case TYPE.CallExpression:

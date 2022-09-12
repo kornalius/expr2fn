@@ -15,6 +15,11 @@ const CONSTANTS: {
 };
 
 
+const OPERATORS = new Set([
+  '+', '-', '!', '*', '/', '%'
+]);
+
+
 /**
  * Lexer tokenizes the expression string
  */
@@ -82,7 +87,7 @@ export class Lexer {
   };
 
   private isOperator(ch: string): boolean {
-    return ch === '+' || ch === '-' || ch === '!';
+    return OPERATORS.has(ch);
   }
 
   private readNumber(): void {

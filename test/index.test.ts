@@ -271,4 +271,16 @@ describe('compile', () => {
       expect(compile('!-1')()).toBe(false);
     });
   });
+
+  describe('can compile multiplicative operators *, / and %', () => {
+    test('once', () => {
+      expect(compile('1 * 2')()).toBe(1 * 2);
+      expect(compile('1 / 2')()).toBe(1 / 2);
+      expect(compile('1 % 2')()).toBe(1 % 2);
+    });
+
+    test('multiple times', () => {
+      expect(compile('1 * 2 / 3 % 4')()).toBe(1 * 2 / 3 % 4);
+    });
+  });
 });
