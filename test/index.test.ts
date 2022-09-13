@@ -283,4 +283,19 @@ describe('compile', () => {
       expect(compile('1 * 2 / 3 % 4')()).toBe(1 * 2 / 3 % 4);
     });
   });
+
+  describe('can compile additive operators + and -', () => {
+    test('once', () => {
+      expect(compile('1 + 2')()).toBe(1 + 2);
+      expect(compile('1 - 2')()).toBe(1 - 2);
+    });
+
+    test('multiple times', () => {
+      expect(compile('1 + 2 - 3')()).toBe(1 + 2 - 3);
+    });
+
+    test('on a lower precedence than multiplicative operators', () => {
+      expect(compile('1 + 2 * 3')()).toBe(1 + 2 * 3);
+    });
+  });
 });

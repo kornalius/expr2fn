@@ -48,6 +48,23 @@ export class Parser {
   }
 
   private binary(): Primary {
+    return this.additive();
+  }
+
+  private additive(): Primary {
+    let left = this.multiplicative();
+    while (this.is('+') || this.is('-')) {
+      left = {
+        type: TYPE.BinaryExpression,
+        operator: this.consume().text,
+        left,
+        right: this.multiplicative()
+      };
+    }
+    return left;
+  }
+
+  private multiplicative(): Primary {
     let left = this.unary();
     while (this.is('*') || this.is('/') || this.is('%')) {
       left = {
