@@ -16,7 +16,7 @@ const CONSTANTS: {
 
 
 const OPERATORS = new Set([
-  '+', '-', '!', '*', '/', '%'
+  '+', '-', '!', '*', '/', '%', '<', '>', '<=', '>='
 ]);
 
 
@@ -184,10 +184,14 @@ export class Lexer {
   }
 
   private readOperator(): void {
+    let operator = '';
+    while (this.isOperator(operator + this.ch)) {
+      operator += this.ch;
+      this.index++;
+    }
     this.tokens.push({
-      text: this.ch,
+      text: operator,
       value: null
     });
-    this.index++;
   }
 }

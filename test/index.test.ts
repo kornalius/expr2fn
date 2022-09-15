@@ -298,4 +298,23 @@ describe('compile', () => {
       expect(compile('1 + 2 * 3')()).toBe(1 + 2 * 3);
     });
   });
+
+  describe('can compile relational operators >, <, >= and <=', () => {
+    test('once', () => {
+      expect(compile('1 < 2')()).toBe(true);
+      expect(compile('1 > 2')()).toBe(false);
+      expect(compile('1 <= 2')()).toBe(true);
+      expect(compile('1 <= 1')()).toBe(true);
+      expect(compile('1 >= 2')()).toBe(false);
+      expect(compile('1 >= 1')()).toBe(true);
+    });
+
+    test('multiple times', () => {
+      expect(compile('1 < 2 < 3')()).toBe(true);
+    });
+
+    test('on a lower precedence than additive operators', () => {
+      expect(compile('1 + 2 < 3 + 4')()).toBe(true);
+    });
+  });
 });

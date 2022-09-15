@@ -48,8 +48,21 @@ export class Parser {
   }
 
   private binary(): Primary {
-    return this.additive();
+    return this.relational();
   }
+
+  private relational(): Primary {
+    let left = this.additive();
+    while (this.is('<') || this.is('>') || this.is('<=') || this.is('>=')) {
+      left = {
+        type: TYPE.BinaryExpression,
+        operator: this.consume().text,
+        left,
+        right: this.additive()
+      };
+    }
+    return left;
+  };
 
   private additive(): Primary {
     let left = this.multiplicative();
