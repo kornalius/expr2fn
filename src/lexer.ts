@@ -16,7 +16,7 @@ const CONSTANTS: {
 
 
 const OPERATORS = new Set([
-  '+', '-', '!', '*', '/', '%', '<', '>', '<=', '>='
+  '+', '-', '!', '*', '/', '%', '<', '>', '<=', '>=', '==', '!=', '===', '!=='
 ]);
 
 
@@ -65,7 +65,7 @@ export class Lexer {
         this.readIdentifier();
       } else if (this.isWhitespace(this.ch)) {
         this.index++;
-      } else if (this.isOperator(this.ch)) {
+      } else if (this.isOperator(this.ch) || this.isOperator(this.ch + this.nextCh)) {
         this.readOperator();
       } else {
         throw `Unexpected next character: ${this.ch}`;
@@ -185,10 +185,10 @@ export class Lexer {
 
   private readOperator(): void {
     let operator = '';
-    while (this.isOperator(operator + this.ch)) {
+    do {
       operator += this.ch;
       this.index++;
-    }
+    } while (this.isOperator(operator + this.ch))
     this.tokens.push({
       text: operator,
       value: null

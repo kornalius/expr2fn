@@ -317,4 +317,25 @@ describe('compile', () => {
       expect(compile('1 + 2 < 3 + 4')()).toBe(true);
     });
   });
+
+  describe('can compile equality operators ==, !=, === and !==', () => {
+    test('once', () => {
+      expect(compile('1 == 1')()).toBe(true);
+      expect(compile('1 == \'1\'')()).toBe(true);
+      expect(compile('1 != 1')()).toBe(false);
+      expect(compile('1 != \'1\'')()).toBe(false);
+      expect(compile('1 === 1')()).toBe(true);
+      expect(compile('1 === \'1\'')()).toBe(false);
+      expect(compile('1 !== 1')()).toBe(false);
+      expect(compile('1 !== \'1\'')()).toBe(true);
+    });
+
+    test('multiple times', () => {
+      expect(compile('1 === 2 !== 3')()).toBe(true);
+    });
+
+    test('on a lower precedence than relational operators', () => {
+      expect(compile('1 == \'1\' > 1 !== \'1\'')()).toBe(true);
+    });
+  });
 });

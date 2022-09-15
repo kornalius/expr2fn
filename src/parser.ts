@@ -48,7 +48,20 @@ export class Parser {
   }
 
   private binary(): Primary {
-    return this.relational();
+    return this.equality();
+  }
+
+  private equality(): Primary {
+    let left = this.relational();
+    while (this.is('==') || this.is('!=') || this.is('===') || this.is('!==')) {
+      left = {
+        type: TYPE.BinaryExpression,
+        operator: this.consume().text,
+        left,
+        right: this.relational()
+      };
+    }
+    return left;
   }
 
   private relational(): Primary {
