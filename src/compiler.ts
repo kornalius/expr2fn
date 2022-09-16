@@ -35,6 +35,24 @@ export class Compiler {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.LogicalExpression:
+        variable = this.variableDeclaration();
+        this.state.body.push(
+          this.assign(
+            variable,
+            this.recurse(ast.left)
+          )
+        );
+        this.state.body.push(
+          this.if_(
+            variable,
+            this.assign(
+              variable,
+              this.recurse(ast.right)
+            )
+          )
+        );
+        return variable;
       case TYPE.BinaryExpression:
         return '(' + this.recurse(ast.left) + ')' + ast.operator + '(' + this.recurse(ast.right) + ')';
       case TYPE.UnaryExpression:

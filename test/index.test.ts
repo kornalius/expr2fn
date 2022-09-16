@@ -338,4 +338,29 @@ describe('compile', () => {
       expect(compile('1 == \'1\' > 1 !== \'1\'')()).toBe(true);
     });
   });
+
+  describe('can compile AND operator &&', () => {
+    test('once', () => {
+      expect(compile('true && true')()).toBe(true);
+      expect(compile('true && false')()).toBe(false);
+      expect(compile('false && false')()).toBe(false);
+    });
+
+    test('multiple times', () => {
+      expect(compile('true && true && true')()).toBe(true);
+      expect(compile('true && true && false')()).toBe(false);
+      expect(compile('true && false && false')()).toBe(false);
+      expect(compile('false && false && false')()).toBe(false);
+    });
+
+    test('in short-circuit way', () => {
+      let invoked = false;
+      compile('false && fn()')({fn: () => invoked = true});
+      expect(invoked).toBe(false);
+    });
+
+    test('on a lower precedence than equality operators', () => {
+      expect(compile('true && 1 === 1')()).toBe(true);
+    });
+  });
 });
