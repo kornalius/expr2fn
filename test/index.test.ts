@@ -363,4 +363,32 @@ describe('compile', () => {
       expect(compile('true && 1 === 1')()).toBe(true);
     });
   });
+
+  describe('can compile OR operator ||', () => {
+    test('once', () => {
+      expect(compile('true || true')()).toBe(true);
+      expect(compile('true || false')()).toBe(true);
+      expect(compile('false || false')()).toBe(false);
+      expect(compile('false || true')()).toBe(true);
+    });
+
+    test('multiple times', () => {
+      expect(compile('true || true || true')()).toBe(true);
+      expect(compile('true || true || false')()).toBe(true);
+      expect(compile('true || false || false')()).toBe(true);
+      expect(compile('false || false || false')()).toBe(false);
+      expect(compile('false || false || true')()).toBe(true);
+      expect(compile('false || true || true')()).toBe(true);
+    });
+
+    test('in short-circuit way', () => {
+      let invoked = false;
+      compile('true || fn()')({fn: () => invoked = true});
+      expect(invoked).toBe(false);
+    });
+
+    test('on a lower precedence than AND operator', () => {
+      expect(compile('true || true && false')()).toBe(true);
+    });
+  });
 });

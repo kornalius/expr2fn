@@ -45,7 +45,7 @@ export class Compiler {
         );
         this.state.body.push(
           this.if_(
-            variable,
+            ast.operator === '&&' ? variable : '!(' + variable + ')',
             this.assign(
               variable,
               this.recurse(ast.right)

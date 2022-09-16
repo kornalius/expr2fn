@@ -45,8 +45,25 @@ export class Parser {
   private program(): AST {
     return {
       type: TYPE.Program,
-      body: this.AND()
+      body: this.logical()
     };
+  }
+
+  private logical(): Primary {
+    return this.OR();
+  }
+
+  private OR(): Primary {
+    let left = this.AND();
+    while (this.is('||')) {
+      left = {
+        type: TYPE.LogicalExpression,
+        operator: this.consume().text,
+        left,
+        right: this.AND()
+      };
+    }
+    return left;
   }
 
   private AND(): Primary {
