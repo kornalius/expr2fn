@@ -54,7 +54,8 @@ export class Lexer {
       } else if (
         this.ch === '[' || this.ch === ',' || this.ch === ']' ||
         this.ch === '{' || this.ch === '}' || this.ch === ':' ||
-        this.ch === '.' || this.ch === '(' || this.ch === ')'
+        this.ch === '.' || this.ch === '(' || this.ch === ')' ||
+        this.ch === '?'
       ) {
         this.tokens.push({
           text: this.ch,

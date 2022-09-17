@@ -3,6 +3,7 @@ import type { Token } from './lexer';
 
 export enum TYPE {
   Program = 'Program',
+  ConditionalExpression = 'ConditionalExpression',
   LogicalExpression = 'LogicalExpression',
   BinaryExpression = 'BinaryExpression',
   UnaryExpression = 'UnaryExpression',
@@ -16,7 +17,8 @@ export enum TYPE {
 };
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary; };
-type Primary = LogicalExpression | BinaryExpression | UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type Primary = ConditionalExpression | LogicalExpression | BinaryExpression | UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
+type ConditionalExpression = { type: TYPE.ConditionalExpression; test: Primary; consequent: Primary; alternate: Primary; };
 type LogicalExpression = { type: TYPE.LogicalExpression; operator: string; left: Primary; right: Primary; };
 type BinaryExpression = { type: TYPE.BinaryExpression; operator: string; left: Primary; right: Primary; };
 type UnaryExpression = { type: TYPE.UnaryExpression; operator: string; argument: Primary; };
@@ -45,8 +47,25 @@ export class Parser {
   private program(): AST {
     return {
       type: TYPE.Program,
-      body: this.logical()
+      body: this.ternary()
     };
+  }
+
+  private ternary(): Primary {
+    let test = this.logical();
+    if (this.is('?')) {
+      this.consume('?')
+      const consequent = this.ternary();
+      this.consume(':');
+      const alternate = this.ternary();
+      test = {
+        type: TYPE.ConditionalExpression,
+        test,
+        consequent,
+        alternate
+      };
+    }
+    return test;
   }
 
   private logical(): Primary {

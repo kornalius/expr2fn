@@ -35,6 +35,34 @@ export class Compiler {
       case TYPE.Program:
         this.state.body.push('return ', this.recurse(ast.body), ';');
         break;
+      case TYPE.ConditionalExpression:
+        variable = this.variableDeclaration();
+        const testVariable = this.variableDeclaration();
+        this.state.body.push(
+          this.assign(
+            testVariable,
+            this.recurse(ast.test)
+          )
+        );
+        this.state.body.push(
+          this.if_(
+            testVariable,
+            this.assign(
+              variable,
+              this.recurse(ast.consequent)
+            )
+          )
+        );
+        this.state.body.push(
+          this.if_(
+            this.not(testVariable),
+            this.assign(
+              variable,
+              this.recurse(ast.alternate)
+            )
+          )
+        );
+        return variable;
       case TYPE.LogicalExpression:
         variable = this.variableDeclaration();
         this.state.body.push(
@@ -45,7 +73,7 @@ export class Compiler {
         );
         this.state.body.push(
           this.if_(
-            ast.operator === '&&' ? variable : '!(' + variable + ')',
+            ast.operator === '&&' ? variable : this.not(variable),
             this.assign(
               variable,
               this.recurse(ast.right)
@@ -135,6 +163,10 @@ export class Compiler {
 
   if_(test: string, consequent: string): string {
     return 'if(' + test + '){' + consequent + '}';
+  }
+
+  not(e: string): string {
+    return '!(' + e + ')';
   }
 
   assign(left: string, right: string): string {

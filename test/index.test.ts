@@ -391,4 +391,19 @@ describe('compile', () => {
       expect(compile('true || true && false')()).toBe(true);
     });
   });
+
+  describe('can compile ternary operators ? and :', () => {
+    test('once', () => {
+      expect(compile('true ? 1 : 2')()).toBe(1);
+      expect(compile('a === 1 ? 1 : 2')({a: 2})).toBe(2);
+    });
+
+    test('multiple times', () => {
+      expect(compile('a === 1 ? b === 2 ? 3 : c === 3 ? 4 : 5 : 6')({a: 1, b: '2', c: '3'})).toBe(5);
+    });
+
+    test('on a lower precedence than OR operator', () => {
+      expect(compile('true || false ? 1 : 2')()).toBe(1);
+    });
+  });
 });
