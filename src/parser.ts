@@ -167,7 +167,11 @@ export class Parser {
 
   private primary(): Primary {
     let primary: Primary;
-    if (this.is('[')) {
+    if (this.is('(')) {
+      this.consume('(');
+      primary = this.ternary();
+      this.consume(')');
+    } else if (this.is('[')) {
       primary = this.array();
     } else if (this.is('{')) {
       primary = this.object();

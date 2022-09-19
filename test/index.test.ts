@@ -406,4 +406,15 @@ describe('compile', () => {
       expect(compile('true || false ? 1 : 2')()).toBe(1);
     });
   });
+
+  describe('can compile parentheses', () => {
+    test('once', () => {
+      expect(compile('(1 + 2) * 3')()).toBe(9);
+      expect(compile('false && (true || true)')()).toBe(false);
+    });
+
+    test('multiple times', () => {
+      expect(compile('(((1) > (2)) ? (3) : (4))')()).toBe(4);
+    });
+  });
 });
