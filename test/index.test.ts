@@ -188,6 +188,7 @@ describe('compile', () => {
     test('but throw an exception to invalid format', () => {
       expect(() => compile('a.')).toThrow();
       expect(() => compile('a[')).toThrow();
+      expect(() => compile('a[]')).toThrow();
     });
   });
 
@@ -214,6 +215,7 @@ describe('compile', () => {
 
     test('but throw an exception to invalid format', () => {
       expect(() => compile('a(')).toThrow();
+      expect(() => compile('a(]')).toThrow();
     });
   });
 
@@ -284,6 +286,9 @@ describe('compile', () => {
       expect(() => compile('+')).toThrow();
       expect(() => compile('-')).toThrow();
       expect(() => compile('!')).toThrow();
+      expect(() => compile('+<')).toThrow();
+      expect(() => compile('-<')).toThrow();
+      expect(() => compile('!<')).toThrow();
     });
   });
 
@@ -302,6 +307,9 @@ describe('compile', () => {
       expect(() => compile('1 *')).toThrow();
       expect(() => compile('1 /')).toThrow();
       expect(() => compile('1 %')).toThrow();
+      expect(() => compile('1 * *')).toThrow();
+      expect(() => compile('1 / /')).toThrow();
+      expect(() => compile('1 % %')).toThrow();
     });
   });
 
@@ -322,6 +330,8 @@ describe('compile', () => {
     test('but throw an exception to invalid format', () => {
       expect(() => compile('1 +')).toThrow();
       expect(() => compile('1 -')).toThrow();
+      expect(() => compile('1 + <')).toThrow();
+      expect(() => compile('1 - <')).toThrow();
     });
   });
 
@@ -348,6 +358,10 @@ describe('compile', () => {
       expect(() => compile('1 >')).toThrow();
       expect(() => compile('1 <=')).toThrow();
       expect(() => compile('1 >=')).toThrow();
+      expect(() => compile('1 < <')).toThrow();
+      expect(() => compile('1 > >')).toThrow();
+      expect(() => compile('1 <= <=')).toThrow();
+      expect(() => compile('1 >= >=')).toThrow();
     });
   });
 
@@ -376,6 +390,11 @@ describe('compile', () => {
       expect(() => compile('1 !=')).toThrow();
       expect(() => compile('1 ===')).toThrow();
       expect(() => compile('1 !==')).toThrow();
+
+      expect(() => compile('1 == ==')).toThrow();
+      expect(() => compile('1 != !=')).toThrow();
+      expect(() => compile('1 === ===')).toThrow();
+      expect(() => compile('1 !== !==')).toThrow();
     });
   });
 
@@ -405,6 +424,7 @@ describe('compile', () => {
 
     test('but throw an exception to invalid format', () => {
       expect(() => compile('true &&')).toThrow();
+      expect(() => compile('true && &&')).toThrow();
     });
   });
 
@@ -437,6 +457,7 @@ describe('compile', () => {
 
     test('but throw an exception to invalid format', () => {
       expect(() => compile('true ||')).toThrow();
+      expect(() => compile('true || ||')).toThrow();
     });
   });
 
@@ -457,6 +478,8 @@ describe('compile', () => {
     test('but throw an exception to invalid format', () => {
       expect(() => compile('true ?')).toThrow();
       expect(() => compile('true ? 1 :')).toThrow();
+      expect(() => compile('true ? ? : 1')).toThrow();
+      expect(() => compile('true ? 1 : :')).toThrow();
     });
   });
 
@@ -472,6 +495,7 @@ describe('compile', () => {
 
     test('but throw an exception to invalid format', () => {
       expect(() => compile('(')).toThrow();
+      expect(() => compile('()')).toThrow();
     });
   });
 });

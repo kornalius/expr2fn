@@ -1,6 +1,6 @@
 export interface Token {
   text: string;
-  value: number | string | boolean | null | undefined;
+  value?: number | string | boolean | null | undefined;
   identifier?: boolean;
 };
 
@@ -58,8 +58,7 @@ export class Lexer {
         this.ch === '?'
       ) {
         this.tokens.push({
-          text: this.ch,
-          value: null
+          text: this.ch
         });
         this.index++;
       } else if (this.isIdentifier(this.ch)) {
@@ -191,8 +190,7 @@ export class Lexer {
       this.index++;
     } while (this.isOperator(operator + this.ch))
     this.tokens.push({
-      text: operator,
-      value: null
+      text: operator
     });
   }
 }

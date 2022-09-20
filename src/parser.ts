@@ -181,6 +181,9 @@ export class Parser {
     } else if (this.peek().identifier) {
       primary = this.identifier();
     } else {
+      if (!this.peek().hasOwnProperty('value')) {
+        throw(`Unexpected character '${this.peek().text}'`);
+      }
       primary = this.constant();
     }
     while (this.is('.') || this.is('[') || this.is('(')) {
