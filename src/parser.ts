@@ -41,7 +41,11 @@ export class Parser {
 
   parse(tokens: Token[]): AST {
     this.tokens = tokens;
-    return this.program();
+    const program = this.program();
+    if (this.tokens.length > 0) {
+      throw(`Unexpected character '${this.peek().text}'`);
+    }
+    return program;
   }
 
   private program(): AST {
