@@ -166,6 +166,9 @@ export class Parser {
   }
 
   private primary(): Primary {
+    if (this.tokens.length === 0) {
+      throw('Incomplete expression');
+    }
     let primary: Primary;
     if (this.is('(')) {
       this.consume('(');

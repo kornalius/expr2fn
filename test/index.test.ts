@@ -184,6 +184,11 @@ describe('compile', () => {
       expect(compile('a[c]')({a: {b: 1}, c: 'b'})).toBe(1);
       expect(compile('a[c[\'d\']]')({a: {b: 1}, c: {d: 'b'}})).toBe(1);
     });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('a.')).toThrow();
+      expect(() => compile('a[')).toThrow();
+    });
   });
 
   describe('can compile function call', () => {
@@ -205,6 +210,10 @@ describe('compile', () => {
           }
         )
       ).toBe(15);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('a(')).toThrow();
     });
   });
 
@@ -270,6 +279,12 @@ describe('compile', () => {
       expect(compile('!+1')()).toBe(false);
       expect(compile('!-1')()).toBe(false);
     });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('+')).toThrow();
+      expect(() => compile('-')).toThrow();
+      expect(() => compile('!')).toThrow();
+    });
   });
 
   describe('can compile multiplicative operators *, / and %', () => {
@@ -281,6 +296,12 @@ describe('compile', () => {
 
     test('multiple times', () => {
       expect(compile('1 * 2 / 3 % 4')()).toBe(1 * 2 / 3 % 4);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('1 *')).toThrow();
+      expect(() => compile('1 /')).toThrow();
+      expect(() => compile('1 %')).toThrow();
     });
   });
 
@@ -296,6 +317,11 @@ describe('compile', () => {
 
     test('on a lower precedence than multiplicative operators', () => {
       expect(compile('1 + 2 * 3')()).toBe(1 + 2 * 3);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('1 +')).toThrow();
+      expect(() => compile('1 -')).toThrow();
     });
   });
 
@@ -315,6 +341,13 @@ describe('compile', () => {
 
     test('on a lower precedence than additive operators', () => {
       expect(compile('1 + 2 < 3 + 4')()).toBe(true);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('1 <')).toThrow();
+      expect(() => compile('1 >')).toThrow();
+      expect(() => compile('1 <=')).toThrow();
+      expect(() => compile('1 >=')).toThrow();
     });
   });
 
@@ -336,6 +369,13 @@ describe('compile', () => {
 
     test('on a lower precedence than relational operators', () => {
       expect(compile('1 == \'1\' > 1 !== \'1\'')()).toBe(true);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('1 ==')).toThrow();
+      expect(() => compile('1 !=')).toThrow();
+      expect(() => compile('1 ===')).toThrow();
+      expect(() => compile('1 !==')).toThrow();
     });
   });
 
@@ -361,6 +401,10 @@ describe('compile', () => {
 
     test('on a lower precedence than equality operators', () => {
       expect(compile('true && 1 === 1')()).toBe(true);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('true &&')).toThrow();
     });
   });
 
@@ -390,6 +434,10 @@ describe('compile', () => {
     test('on a lower precedence than AND operator', () => {
       expect(compile('true || true && false')()).toBe(true);
     });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('true ||')).toThrow();
+    });
   });
 
   describe('can compile ternary operators ? and :', () => {
@@ -405,6 +453,11 @@ describe('compile', () => {
     test('on a lower precedence than OR operator', () => {
       expect(compile('true || false ? 1 : 2')()).toBe(1);
     });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('true ?')).toThrow();
+      expect(() => compile('true ? 1 :')).toThrow();
+    });
   });
 
   describe('can compile parentheses', () => {
@@ -415,6 +468,10 @@ describe('compile', () => {
 
     test('multiple times', () => {
       expect(compile('(((1) > (2)) ? (3) : (4))')()).toBe(4);
+    });
+
+    test('but throw an exception to invalid format', () => {
+      expect(() => compile('(')).toThrow();
     });
   });
 });
