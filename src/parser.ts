@@ -16,7 +16,7 @@ export enum TYPE {
   Literal = 'Literal'
 };
 export type AST = Program | Primary;
-type Program = { type: TYPE.Program; body: Primary; };
+type Program = { type: TYPE.Program; body: Primary[]; };
 type Primary = ConditionalExpression | LogicalExpression | BinaryExpression | UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
 type ConditionalExpression = { type: TYPE.ConditionalExpression; test: Primary; consequent: Primary; alternate: Primary; };
 type LogicalExpression = { type: TYPE.LogicalExpression; operator: string; left: Primary; right: Primary; };
@@ -39,7 +39,7 @@ export class Parser {
 
   constructor() { }
 
-  parse(tokens: Token[]): AST {
+  parse(tokens: Token[]): Program {
     this.tokens = tokens;
     const program = this.program();
     if (this.tokens.length > 0) {
@@ -48,10 +48,20 @@ export class Parser {
     return program;
   }
 
-  private program(): AST {
+  private program(): Program {
+    const body: Primary[] = [];
+    while (true) {
+      body.push(this.ternary());
+      if (!this.is(';')) {
+        break;
+      }
+      while (this.is(';')) {
+        this.consume(';');
+      }
+    }
     return {
       type: TYPE.Program,
-      body: this.ternary()
+      body
     };
   }
 

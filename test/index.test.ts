@@ -504,4 +504,29 @@ describe('compile', () => {
       expect(() => compile('(1))')).toThrow();
     });
   });
+
+  test('can compile multiple statements', () => {
+    let invoked1 = false;
+    let invoked2 = false;
+    let invoked3 = false;
+    const ctx = {
+      fn1: () => {
+        invoked1 = true;
+        return 1;
+      },
+      fn2: () => {
+        invoked2 = true;
+        return 2;
+      },
+      fn3: () => {
+        invoked3 = true;
+        return 3;
+      }
+    };
+    const result = compile('fn1(); fn2();;; fn3()')(ctx);
+    expect(invoked1).toBe(true);
+    expect(invoked2).toBe(true);
+    expect(invoked3).toBe(true);
+    expect(result).toBe(3);
+  });
 });

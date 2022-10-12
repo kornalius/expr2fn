@@ -33,7 +33,11 @@ export class Compiler {
     let variable: string;
     switch (ast.type) {
       case TYPE.Program:
-        this.state.body.push('return ', this.recurse(ast.body), ';');
+        const len = ast.body.length;
+        for (let i = 0; i < len - 1; i++) {
+          this.state.body.push(this.recurse(ast.body[i]), ';');
+        }
+        this.state.body.push('return ', this.recurse(ast.body[len - 1]), ';');
         break;
       case TYPE.ConditionalExpression:
         variable = this.variableDeclaration();
