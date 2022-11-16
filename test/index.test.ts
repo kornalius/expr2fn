@@ -529,4 +529,22 @@ describe('compile', () => {
     expect(invoked3).toBe(true);
     expect(result).toBe(3);
   });
+
+  describe('does not allow calling the function constructor', () => {
+    test('explicitly', () => {
+      const fn = compile('fn.constructor(\'delete a;\')()');
+      const ctx = {
+        fn: () => {}
+      };
+      expect(() => fn(ctx)).toThrow();
+    });
+
+    test('by an alias', () => {
+      const fn = compile('aliasFn(\'delete a;\')()');
+      const ctx = {
+        aliasFn: Function
+      };
+      expect(() => fn(ctx)).toThrow();
+    });
+  });
 });

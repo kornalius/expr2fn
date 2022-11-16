@@ -20,13 +20,14 @@ export class Compiler {
       body: []
     };
     this.recurse(ast);
-    return new Function(
-      'ctx',
+    const fnBody = 'return function(ctx){' +
       (this.state.vars.length ?
         'var ' + this.state.vars.join(',') + ';' :
         ''
-      ) + this.state.body.join('')
-    );
+      ) +
+      this.state.body.join('') +
+      '}';
+    return new Function('ensureSafeFn', fnBody)(this.ensureSafeFn);
   }
 
   recurse(ast: AST, setCallContext?: Function): string {
@@ -95,6 +96,7 @@ export class Compiler {
           callContext = context;
         });
         const args = ast.arguments.map(arg => this.recurse(arg));
+        this.state.body.push('ensureSafeFn(' + callee + ');');
         return callee + '&&' + callee + '.call(' + callContext +
           (args.length > 0 ?
             ',' + args.join(',') :
@@ -182,5 +184,11 @@ export class Compiler {
       return '(' + left + ')[' + right + ']';
     }
     return '(' + left + ').' + right;
+  }
+
+  ensureSafeFn(callee: any) {
+    if (typeof callee === 'function' && callee === Function) {
+      throw('calling the function constructor is not allowed!');
+    }
   }
 }
