@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import { compile } from '../src/index';
+import compile from '../src/index';
 
 
 describe('compile', () => {

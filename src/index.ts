@@ -3,7 +3,7 @@ import { Parser } from './parser';
 import { Compiler } from './compiler';
 
 
-export function compile(expr: string) {
+export default function compile(expr: string) {
   const lexer = new Lexer();
   const parser = new Parser();
   const compiler = new Compiler();
