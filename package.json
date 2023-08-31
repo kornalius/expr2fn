@@ -1,6 +1,6 @@
 {
-  "name": "expr2fn",
-  "version": "1.0.0",
+  "name": "kornalius-expr2fn",
+  "version": "1.0.1",
   "description": "Compile string expressions into JS functions.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
