@@ -130,6 +130,11 @@ describe('compile', () => {
       expect(() => compile('[1')).toThrow();
       expect(() => compile('[1]]')).toThrow();
     });
+
+    test('with expressions', () => {
+      const fn = compile('[0 || 2, 10 + 23, 1 ? \'hello\' : \'world\']');
+      expect(fn()).toEqual([2, 33, 'hello']);
+    });
   });
 
   describe('can compile an object', () => {
@@ -146,6 +151,11 @@ describe('compile', () => {
     test('with identifier-key properties ', () => {
       const fn = compile('{a: 1, bc: \'23\', def: [\'4\', 5, {g: 67}]}');
       expect(fn()).toEqual({a: 1, bc: '23', def: ['4', 5, {g: 67}]});
+    });
+
+    test('with expression values ', () => {
+      const fn = compile('{a: 0 || 2, bc: 10 + 23, def: 1 ? \'hello\' : \'world\' }');
+      expect(fn()).toEqual({a: 2, bc: 33, def: 'hello' });
     });
 
     test('but throw an exception to invalid format', () => {

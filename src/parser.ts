@@ -14,7 +14,8 @@ export enum TYPE {
   Property = 'Property',
   Identifier = 'Identifier',
   Literal = 'Literal'
-};
+}
+
 export type AST = Program | Primary;
 type Program = { type: TYPE.Program; body: Primary[]; };
 type Primary = ConditionalExpression | LogicalExpression | BinaryExpression | UnaryExpression | CallExpression | MemberExpression | ArrayExpression | ObjectExpression | Property | Identifier | Literal;
@@ -29,7 +30,6 @@ type ObjectExpression = { type: TYPE.ObjectExpression; properties: Property[]; }
 type Property = { type: TYPE.Property; key: Identifier | Literal; value: Primary; };
 type Identifier = { type: TYPE.Identifier; name: string; }
 type Literal = { type: TYPE.Literal; value: number | string | boolean | null | undefined; };
-
 
 /**
  * Parser parses the tokens to build an AST tree
@@ -260,7 +260,7 @@ export class Parser {
         elements.push(null);
         continue;
       }
-      elements.push(this.primary());
+      elements.push(this.ternary());
       if (this.is(',')) {
         this.consume(',');
       } else {
@@ -280,7 +280,7 @@ export class Parser {
     while (!this.is('}')) {
       const key = this.peek().identifier ? this.identifier() : this.constant();
       this.consume(':');
-      const value = this.primary();
+      const value = this.ternary();
       properties.push({
         type: TYPE.Property,
         key,
